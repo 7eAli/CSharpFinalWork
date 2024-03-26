@@ -1,4 +1,10 @@
 
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using MessagesApp.Db;
+using MessagesApp.Dto.Map;
+using MessagesApp.Repo;
+
 namespace MessagesApp
 {
     public class Program
@@ -7,16 +13,21 @@ namespace MessagesApp
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddAutoMapper(typeof(MappingProfile));
 
+            builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+            builder.Host.ConfigureContainer<ContainerBuilder>(cb =>
+            {
+                cb.RegisterType<MessageRepository>().As<IMessageRepository>();
+                cb.Register(c => new AppDbContext(builder.Configuration.GetConnectionString("db"))).InstancePerDependency();
+            });
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();

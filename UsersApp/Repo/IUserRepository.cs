@@ -5,8 +5,10 @@ namespace UsersApp.Repo
 {
     public interface IUserRepository
     {
-        public Guid GetUserId(string email);
-        public void AddUser(UserDto userDto);
+        public string GetUserId(string email);
+        public IEnumerable<UserDto> GetUsers();
+        public string AddUser(UserDto userDto);
+        public string DeleteUser(string email);
         public RoleType GetUserRole(string email, string password);
     }
 }

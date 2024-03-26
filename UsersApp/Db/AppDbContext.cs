@@ -4,7 +4,8 @@ namespace UsersApp.Db
 {
     public class AppDbContext : DbContext
     {
-        public DbSet<User> Users { get; set; }
+        public  DbSet<User> Users { get; set; }
+        public DbSet<Role> Roles { get; set; }
 
         private string _connectionString;
 
@@ -41,20 +42,23 @@ namespace UsersApp.Db
                 entity.Property(e => e.RoleId).HasConversion<int>();
             });
 
-            modelBuilder
-                .Entity<Role>()
-                .Property(e => e.RoleType)
-                .HasConversion<int>();
 
-            modelBuilder
-                .Entity<Role>().HasData(
-                Enum.GetValues(typeof(RoleType))
-                .Cast<RoleType>()
-                .Select(e => new Role
-                {
-                    RoleType = e,
-                    Name = e.ToString()
-                }));
+            modelBuilder.Entity<Role>(entity =>
+            {
+                entity.HasKey(e => e.RoleType);
+
+                entity.Property(e => e.RoleType).HasConversion<int>();
+
+                entity
+                    .HasData(Enum
+                        .GetValues(typeof(RoleType))
+                            .Cast<RoleType>()
+                                .Select(e => new Role
+                                {
+                                    RoleType = e,
+                                    Name = e.ToString()
+                                }));
+            });
         }
     }
 }
